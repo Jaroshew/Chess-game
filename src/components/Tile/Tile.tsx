@@ -1,13 +1,24 @@
-import './Tile.css';
+import "./Tile.css";
 
 interface Props {
-  coordinate: number;
+  coordinate: number; // The tile's coordinate for color
+  image?: string; // Optional image for the piece
 }
 
-export default function Tile({coordinate}: Props) {
-    if(coordinate % 2 == 0) {
-      return <div className="tile black-tile"></div>
-    } else {
-      return <div className="tile white-tile"></div>
-    }
+// Tile component renders a chessboard square
+export default function Tile({ coordinate, image }: Props) {
+  if (coordinate % 2 === 0) {
+    // Render a black tile with an optional piece image
+    return (
+      <div className="tile black-tile">
+        <img src={image} />
+      </div>
+    );
+  } else {
+    return (
+      <div className="tile white-tile">
+        <img src={image} />
+      </div>
+    );
+  }
 }
