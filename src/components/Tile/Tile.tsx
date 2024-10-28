@@ -11,14 +11,14 @@ export default function Tile({ coordinate, image }: Props) {
     // Render a black tile with an optional piece image
     return (
       <div className="tile black-tile">
-        <img src={image} />
+        {image && <div style={{backgroundImage: `url(${image})`}} className="chess-piece"></div>}
       </div>
     );
   } else {
     return (
       <div className="tile white-tile">
-        <img src={image} />
-      </div>
+        {image && < div style={{backgroundImage: `url(${image})`}} className="chess-piece"></div>}
+        </div>
     );
   }
 }

@@ -35,7 +35,7 @@ piecesTypes.forEach((piece, index) => {
   pieces.push({ image: `assets/images/${piece}_w.svg`, x: index, y: 0 });
   pieces.push({ image: `assets/images/${piece}_w.svg`, x: 7 - index, y: 0 });
 
-  // black pieces
+  // Black pieces
   pieces.push({ image: `assets/images/${piece}_b.svg`, x: index, y: 7 });
   pieces.push({ image: `assets/images/${piece}_b.svg`, x: 7 - index, y: 7 });
 
@@ -65,7 +65,7 @@ export default function Chessboard() {
         if (piece.x === i && piece.y === j) image = piece.image;
       });
 
-      board.push(<Tile image={image} coordinate={number} />);
+      board.push(<Tile key={`${j}, ${i}`} image={image} coordinate={number} />);
     }
   }
   return <div id="chessboard">{board}</div>;
