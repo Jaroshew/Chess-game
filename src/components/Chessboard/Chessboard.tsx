@@ -1,7 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import Tile from "../Tile/Tile";
 import "./Chessboard.css";
-import { Z_ASCII } from "zlib";
 
 // Define the chessboard axis
 const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
