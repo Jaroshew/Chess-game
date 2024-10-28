@@ -5,11 +5,11 @@ import "./Chessboard.css";
 const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
 const horizontalAxis = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
-// Define a type for chess pieces
+// Chess piece type definition
 interface Piece {
-  image: string; // URL to the piece's imag
-  x: number; // Horizontal position
-  y: number; // Vertical position
+  image: string;
+  x: number;
+  y: number;
 }
 
 // Placing pieces on the board. Pices array
@@ -49,6 +49,42 @@ piecesTypes.forEach((piece, index) => {
   });
 });
 
+let activePiece: HTMLElement | null = null;
+
+// Function to grab a piece
+function grabPiece(e: React.MouseEvent) {
+  const element = e.target as HTMLElement;
+  if (element.classList.contains("chess-piece")) {
+    console.log(e);
+
+    const x = e.clientX - 50;
+    const y = e.clientY - 50;
+    element.style.position = "absolute";
+    element.style.left = `${x}px`;
+    element.style.top = `${y}px`;
+
+    activePiece = element;
+  }
+}
+
+// Function to move a piece
+function movePiece(e: React.MouseEvent) {
+  if (activePiece) {
+    const x = e.clientX - 50;
+    const y = e.clientY - 50;
+    activePiece.style.position = "absolute";
+    activePiece.style.left = `${x}px`;
+    activePiece.style.top = `${y}px`;
+  }
+}
+
+// Function to drop a piece
+function dropPiece(e: React.MouseEvent) {
+  if (activePiece) {
+    activePiece = null;
+  }
+}
+
 // Chess board function
 export default function Chessboard() {
   let board = [];
@@ -68,5 +104,14 @@ export default function Chessboard() {
       board.push(<Tile key={`${j}, ${i}`} image={image} coordinate={number} />);
     }
   }
-  return <div id="chessboard">{board}</div>;
+  return (
+    <div
+      onMouseMove={(e) => movePiece(e)}
+      onMouseDown={(e) => grabPiece(e)}
+      onMouseUp={(e) => dropPiece(e)}
+      id="chessboard"
+    >
+      {board}
+    </div>
+  );
 }
