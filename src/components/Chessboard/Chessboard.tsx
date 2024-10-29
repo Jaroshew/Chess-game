@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Tile from "../Tile/Tile";
 import "./Chessboard.css";
 
@@ -13,55 +13,53 @@ interface Piece {
   y: number;
 }
 
-// Placing pieces on the board. Pices array
-const pieces: Piece[] = [];
+// Initialize the chessboard with all the pieces in their starting positions
+const initialBoardState: Piece[] = [];
 
-// Initialize the pieces array with black pawns
-for (let i = 0; i < 8; i++) {
-  pieces.push({ image: "assets/images/pawn_b.svg", x: i, y: 6 });
+for (let p = 0 ; p < 2; p++) {
+  const type = p === 0 ? "b" : "w";
+  const y = p === 0 ? 7 : 0;
+
+  initialBoardState.push({ image: `assets/images/rook_${type}.svg`, x: 0, y});
+  initialBoardState.push({ image: `assets/images/rook_${type}.svg`, x: 7, y});
+  initialBoardState.push({ image: `assets/images/knight_${type}.svg`, x: 1, y});
+  initialBoardState.push({ image: `assets/images/knight_${type}.svg`, x: 6, y});
+  initialBoardState.push({ image: `assets/images/bishop_${type}.svg`, x: 2, y});
+  initialBoardState.push({ image: `assets/images/bishop_${type}.svg`, x: 5, y});
+  initialBoardState.push({ image: `assets/images/queen_${type}.svg`, x: 3, y});
+  initialBoardState.push({ image: `assets/images/king_${type}.svg`, x: 4, y});
 }
 
-// Initialize the pieces array with white pawns
 for (let i = 0; i < 8; i++) {
-  pieces.push({ image: "assets/images/pawn_w.svg", x: i, y: 1 });
+  initialBoardState.push({ image: `assets/images/pawn_b.svg`, x: i, y: 6 });
+  initialBoardState.push({ image: `assets/images/pawn_w.svg`, x: i, y: 1 });
 }
-
-// White and black piece types
-const piecesTypes = ["rook", "knight", "bishop"];
-const royalty = ["queen", "king"];
-
-// Add rooks, knights, and bishops for both white and black
-piecesTypes.forEach((piece, index) => {
-  pieces.push({ image: `assets/images/${piece}_w.svg`, x: index, y: 0 });
-  pieces.push({ image: `assets/images/${piece}_w.svg`, x: 7 - index, y: 0 });
-
-  pieces.push({ image: `assets/images/${piece}_b.svg`, x: index, y: 7 });
-  pieces.push({ image: `assets/images/${piece}_b.svg`, x: 7 - index, y: 7 });
-
-  // Add queen and king for white and black
-  royalty.forEach((piece, index) => {
-    pieces.push({ image: `assets/images/${piece}_w.svg`, x: 3 + index, y: 0 });
-    pieces.push({ image: `assets/images/${piece}_b.svg`, x: 3 + index, y: 7 });
-  });
-});
 
 // Chess board function
 export default function Chessboard() {
+  const [activePiece, setActivePiece] = useState<HTMLElement | null>(null);
+  const [gridX, setGridX] = useState(0);
+  const [gridY, setGridY] = useState(0);
+  const [pieces, setPieces] = useState<Piece[]>(initialBoardState);
   const chessBoardRef = useRef<HTMLDivElement>(null);
-  let board = [];
-  let activePiece: HTMLElement | null = null;
 
   // Function to grab a piece
   function grabPiece(e: React.MouseEvent) {
+    const chessboard = chessBoardRef.current;
     const element = e.target as HTMLElement;
-    if (element.classList.contains("chess-piece")) {
+
+    if (element.classList.contains("chess-piece") && chessboard) {
+      // Calculate grid position
+      setGridX(Math.floor((e.clientX - chessboard.offsetLeft) / 100));
+      setGridY(Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100)));
+
       const x = e.clientX - 50;
       const y = e.clientY - 50;
       element.style.position = "absolute";
       element.style.left = `${x}px`;
       element.style.top = `${y}px`;
 
-      activePiece = element;
+      setActivePiece(element);
     }
   }
 
@@ -91,11 +89,29 @@ export default function Chessboard() {
 
   // Function to drop a piece
   function dropPiece(e: React.MouseEvent) {
-    if (activePiece) {
-      activePiece = null;
+    const chessboard = chessBoardRef.current;
+
+    if (activePiece && chessboard) {
+      // Calculate new position
+      const x = Math.floor((e.clientX - chessboard.offsetLeft) / 100);
+      const y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100));
+
+      // Update piece position
+      setPieces(value => {
+        const pieces = value.map(p => {
+          if (p.x === gridX && p.y === gridY) {
+            p.x = x;
+            p.y = y;
+          }
+          return p;
+        })
+        return pieces;
+      })
+      setActivePiece(null);
     }
   }
 
+  let board = [];
   // Chess board implementation
   for (let j = verticalAxis.length - 1; j >= 0; j--) {
     // Loop through each row (from the top)
