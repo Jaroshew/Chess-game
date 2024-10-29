@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Tile from "../Tile/Tile";
 import "./Chessboard.css";
+import Referee from "../Referee/Referee";
 
 // Define the chessboard axis
 const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
@@ -11,28 +12,45 @@ interface Piece {
   image: string;
   x: number;
   y: number;
+  type: PieceType;
+  team: TeamType;
+}
+
+export enum TeamType {
+  BLACK,
+  WHITE
+}
+
+export enum PieceType {
+  PAWN,
+  KNIGHT,
+  BISHOP,
+  ROOK,
+  QUEEN,
+  KING,
 }
 
 // Initialize the chessboard with all the pieces in their starting positions
 const initialBoardState: Piece[] = [];
 
 for (let p = 0 ; p < 2; p++) {
-  const type = p === 0 ? "b" : "w";
-  const y = p === 0 ? 7 : 0;
+  const teamType = (p === 0) ? TeamType.BLACK : TeamType.WHITE;
+  const type = (teamType === TeamType.BLACK) ? "b" : "w";
+  const y = (teamType === TeamType.BLACK) ? 7 : 0;
 
-  initialBoardState.push({ image: `assets/images/rook_${type}.svg`, x: 0, y});
-  initialBoardState.push({ image: `assets/images/rook_${type}.svg`, x: 7, y});
-  initialBoardState.push({ image: `assets/images/knight_${type}.svg`, x: 1, y});
-  initialBoardState.push({ image: `assets/images/knight_${type}.svg`, x: 6, y});
-  initialBoardState.push({ image: `assets/images/bishop_${type}.svg`, x: 2, y});
-  initialBoardState.push({ image: `assets/images/bishop_${type}.svg`, x: 5, y});
-  initialBoardState.push({ image: `assets/images/queen_${type}.svg`, x: 3, y});
-  initialBoardState.push({ image: `assets/images/king_${type}.svg`, x: 4, y});
+  initialBoardState.push({ image: `assets/images/rook_${type}.svg`, x: 0, y, type: PieceType.ROOK, team: teamType});  
+  initialBoardState.push({ image: `assets/images/rook_${type}.svg`, x: 7, y, type: PieceType.ROOK, team: teamType});
+  initialBoardState.push({ image: `assets/images/knight_${type}.svg`, x: 1, y, type: PieceType.KNIGHT, team: teamType});
+  initialBoardState.push({ image: `assets/images/knight_${type}.svg`, x: 6, y, type: PieceType.KNIGHT, team: teamType});
+  initialBoardState.push({ image: `assets/images/bishop_${type}.svg`, x: 2, y, type: PieceType.BISHOP, team: teamType});
+  initialBoardState.push({ image: `assets/images/bishop_${type}.svg`, x: 5, y, type: PieceType.BISHOP, team: teamType});
+  initialBoardState.push({ image: `assets/images/queen_${type}.svg`, x: 3, y, type: PieceType.QUEEN, team: teamType});
+  initialBoardState.push({ image: `assets/images/king_${type}.svg`, x: 4, y, type: PieceType.KING, team: teamType});
 }
 
 for (let i = 0; i < 8; i++) {
-  initialBoardState.push({ image: `assets/images/pawn_b.svg`, x: i, y: 6 });
-  initialBoardState.push({ image: `assets/images/pawn_w.svg`, x: i, y: 1 });
+  initialBoardState.push({ image: `assets/images/pawn_b.svg`, x: i, y: 6, type: PieceType.PAWN, team: TeamType.BLACK});
+  initialBoardState.push({ image: `assets/images/pawn_w.svg`, x: i, y: 1, type: PieceType.PAWN, team: TeamType.WHITE});
 }
 
 // Chess board function
@@ -42,6 +60,7 @@ export default function Chessboard() {
   const [gridY, setGridY] = useState(0);
   const [pieces, setPieces] = useState<Piece[]>(initialBoardState);
   const chessBoardRef = useRef<HTMLDivElement>(null);
+  const referee = new Referee();
 
   // Function to grab a piece
   function grabPiece(e: React.MouseEvent) {
@@ -100,6 +119,9 @@ export default function Chessboard() {
       setPieces(value => {
         const pieces = value.map(p => {
           if (p.x === gridX && p.y === gridY) {
+            // Check if move is valid
+            referee.isValidMove(gridX, gridY, x, y, p.type, p.team);
+
             p.x = x;
             p.y = y;
           }
