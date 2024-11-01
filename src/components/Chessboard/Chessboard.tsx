@@ -8,7 +8,7 @@ const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
 const horizontalAxis = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
 // Chess piece type definition
-interface Piece {
+export interface Piece {
   image: string;
   x: number;
   y: number;
@@ -120,10 +120,16 @@ export default function Chessboard() {
         const pieces = value.map(p => {
           if (p.x === gridX && p.y === gridY) {
             // Check if move is valid
-            referee.isValidMove(gridX, gridY, x, y, p.type, p.team);
+            const validMove = referee.isValidMove(gridX, gridY, x, y, p.type, p.team, value);
 
-            p.x = x;
-            p.y = y;
+            if (validMove) {
+              p.x = x;
+              p.y = y;
+            } else {
+              activePiece.style.position = "relative";
+              activePiece.style.removeProperty("left");
+              activePiece.style.removeProperty("top");
+            }
           }
           return p;
         })

@@ -1,5 +1,11 @@
+:root {
+  --color-background: #202020;
+  --color-darkSquare: #779556;
+  --color-lightSquare: #ebecd0;
+}
+
 body {
-  background: rgb(32, 32, 32);
+  background: var(--color-background);
 }
 
 .tile {
@@ -25,12 +31,13 @@ body {
   cursor: grabbing;
 }
 
+
 .black-tile {
-  background-color: #779556;
+  background-color: var(--color-darkSquare);
 }
 
 .white-tile {
-  background-color: #ebecd0;
+  background-color: var(--color-lightSquare);
 }
 
 .tile img {
