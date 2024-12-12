@@ -18,7 +18,7 @@ export interface Piece {
 
 export enum TeamType {
   BLACK,
-  WHITE
+  WHITE,
 }
 
 export enum PieceType {
@@ -33,24 +33,84 @@ export enum PieceType {
 // Initialize the chessboard with all the pieces in their starting positions
 const initialBoardState: Piece[] = [];
 
-for (let p = 0 ; p < 2; p++) {
-  const teamType = (p === 0) ? TeamType.BLACK : TeamType.WHITE;
-  const type = (teamType === TeamType.BLACK) ? "b" : "w";
-  const y = (teamType === TeamType.BLACK) ? 7 : 0;
+for (let p = 0; p < 2; p++) {
+  const teamType = p === 0 ? TeamType.BLACK : TeamType.WHITE;
+  const type = teamType === TeamType.BLACK ? "b" : "w";
+  const y = teamType === TeamType.BLACK ? 7 : 0;
 
-  initialBoardState.push({ image: `assets/images/rook_${type}.svg`, x: 0, y, type: PieceType.ROOK, team: teamType});  
-  initialBoardState.push({ image: `assets/images/rook_${type}.svg`, x: 7, y, type: PieceType.ROOK, team: teamType});
-  initialBoardState.push({ image: `assets/images/knight_${type}.svg`, x: 1, y, type: PieceType.KNIGHT, team: teamType});
-  initialBoardState.push({ image: `assets/images/knight_${type}.svg`, x: 6, y, type: PieceType.KNIGHT, team: teamType});
-  initialBoardState.push({ image: `assets/images/bishop_${type}.svg`, x: 2, y, type: PieceType.BISHOP, team: teamType});
-  initialBoardState.push({ image: `assets/images/bishop_${type}.svg`, x: 5, y, type: PieceType.BISHOP, team: teamType});
-  initialBoardState.push({ image: `assets/images/queen_${type}.svg`, x: 3, y, type: PieceType.QUEEN, team: teamType});
-  initialBoardState.push({ image: `assets/images/king_${type}.svg`, x: 4, y, type: PieceType.KING, team: teamType});
+  initialBoardState.push({
+    image: `assets/images/rook_${type}.svg`,
+    x: 0,
+    y,
+    type: PieceType.ROOK,
+    team: teamType,
+  });
+  initialBoardState.push({
+    image: `assets/images/rook_${type}.svg`,
+    x: 7,
+    y,
+    type: PieceType.ROOK,
+    team: teamType,
+  });
+  initialBoardState.push({
+    image: `assets/images/knight_${type}.svg`,
+    x: 1,
+    y,
+    type: PieceType.KNIGHT,
+    team: teamType,
+  });
+  initialBoardState.push({
+    image: `assets/images/knight_${type}.svg`,
+    x: 6,
+    y,
+    type: PieceType.KNIGHT,
+    team: teamType,
+  });
+  initialBoardState.push({
+    image: `assets/images/bishop_${type}.svg`,
+    x: 2,
+    y,
+    type: PieceType.BISHOP,
+    team: teamType,
+  });
+  initialBoardState.push({
+    image: `assets/images/bishop_${type}.svg`,
+    x: 5,
+    y,
+    type: PieceType.BISHOP,
+    team: teamType,
+  });
+  initialBoardState.push({
+    image: `assets/images/queen_${type}.svg`,
+    x: 3,
+    y,
+    type: PieceType.QUEEN,
+    team: teamType,
+  });
+  initialBoardState.push({
+    image: `assets/images/king_${type}.svg`,
+    x: 4,
+    y,
+    type: PieceType.KING,
+    team: teamType,
+  });
 }
 
 for (let i = 0; i < 8; i++) {
-  initialBoardState.push({ image: `assets/images/pawn_b.svg`, x: i, y: 6, type: PieceType.PAWN, team: TeamType.BLACK});
-  initialBoardState.push({ image: `assets/images/pawn_w.svg`, x: i, y: 1, type: PieceType.PAWN, team: TeamType.WHITE});
+  initialBoardState.push({
+    image: `assets/images/pawn_b.svg`,
+    x: i,
+    y: 6,
+    type: PieceType.PAWN,
+    team: TeamType.BLACK,
+  });
+  initialBoardState.push({
+    image: `assets/images/pawn_w.svg`,
+    x: i,
+    y: 1,
+    type: PieceType.PAWN,
+    team: TeamType.WHITE,
+  });
 }
 
 // Chess board function
@@ -70,7 +130,9 @@ export default function Chessboard() {
     if (element.classList.contains("chess-piece") && chessboard) {
       // Calculate grid position
       setGridX(Math.floor((e.clientX - chessboard.offsetLeft) / 100));
-      setGridY(Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100)));
+      setGridY(
+        Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100))
+      );
 
       const x = e.clientX - 50;
       const y = e.clientY - 50;
@@ -113,28 +175,48 @@ export default function Chessboard() {
     if (activePiece && chessboard) {
       // Calculate new position
       const x = Math.floor((e.clientX - chessboard.offsetLeft) / 100);
-      const y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100));
+      const y = Math.abs(
+        Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100)
+      );
 
-      // Update piece position
-      setPieces(value => {
-        const pieces = value.map(p => {
-          if (p.x === gridX && p.y === gridY) {
-            // Check if move is valid
-            const validMove = referee.isValidMove(gridX, gridY, x, y, p.type, p.team, value);
+      // Attacked piece finder
+      const currentPiece = pieces.find((p) => p.x === gridX && p.y === gridY);
+      const attackedPiece = pieces.find((p) => p.x === x && p.y === y);
 
-            if (validMove) {
-              p.x = x;
-              p.y = y;
-            } else {
-              activePiece.style.position = "relative";
-              activePiece.style.removeProperty("left");
-              activePiece.style.removeProperty("top");
+      // Check if there is a piece at the current grid location
+      if (currentPiece) {
+        const validMove = referee.isValidMove(
+          gridX,
+          gridY,
+          x,
+          y,
+          currentPiece.type,
+          currentPiece.team,
+          pieces
+        );
+
+        if (validMove) {
+          const updatedPieces = pieces.reduce((results, piece) => {
+            if (piece.x === currentPiece.x && piece.y === currentPiece.y) {
+              piece.x = x;
+              piece.y = y;
+              results.push(piece);
+            } else if (!(piece.x === x && piece.y === y)) {
+              results.push(piece);
             }
-          }
-          return p;
-        })
-        return pieces;
-      })
+
+            return results; // Return the results array for the next iteration
+          }, [] as Piece[]);
+
+          setPieces(updatedPieces);
+          
+        } else {
+          // Reset piece position
+          activePiece.style.position = "relative";
+          activePiece.style.removeProperty("left");
+          activePiece.style.removeProperty("top");
+        }
+      }
       setActivePiece(null);
     }
   }
