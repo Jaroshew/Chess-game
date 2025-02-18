@@ -92,7 +92,6 @@ export default function Chessboard() {
         const isEnPassantMove = referee.isEnPassantMove(
           grabPosition,
           { x, y },
-          currentPiece.type,
           currentPiece.team,
           pieces
         );

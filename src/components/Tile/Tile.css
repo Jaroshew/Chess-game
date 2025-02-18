@@ -31,7 +31,6 @@ body {
   cursor: grabbing;
 }
 
-
 .black-tile {
   background-color: var(--color-darkSquare);
 }
