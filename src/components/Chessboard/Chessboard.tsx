@@ -18,6 +18,9 @@ export default function Chessboard() {
   const [activePiece, setActivePiece] = useState<HTMLElement | null>(null); // Track the currently grabbed piece
   const [grabPosition, setGrabPosition] = useState<Position>({ x: -1, y: -1 }); // Position where the piece was grabbed
   const [pieces, setPieces] = useState<Piece[]>(initialBoardState); // State for all chess pieces
+  const [isPromotionVisible, setPromotionVisible] = useState(false); // State to control promotion menu visibility
+  const [promotionPosition, setPromotionPosition] = useState<Position | null>(null); // Position where promotion happens
+  const modalRef = useRef<HTMLDivElement>(null); // Reference to the promotion DOM element
   const chessBoardRef = useRef<HTMLDivElement>(null); // Reference to the chessboard DOM element
   const referee = new Referee(); // Handles chess rules and move validation
 
@@ -147,10 +150,39 @@ export default function Chessboard() {
           activePiece.style.removeProperty("top");
           activePiece.style.removeProperty("left");
         }
+
+        // Check for pawn promotion (if it reaches the last rank)
+        if (currentPiece.type === PieceType.PAWN && (y === 0 || y === 7)) {
+          setPromotionPosition({ x, y });
+          setPromotionVisible(true);
+        }
       }
+
       setActivePiece(null); // Clear active piece after dropping
     }
   }
+
+// Handle promotion choice
+function handlePromotion(pieceType: PieceType) {
+  if (promotionPosition) {
+    const updatedPieces = pieces.map((piece) => {
+      // Check if the piece is a pawn at the promotion position
+      if (samePosition(piece.position, promotionPosition) && piece.type === PieceType.PAWN) {
+        // Get the image based on the selected piece type and the team
+        const teamSuffix = piece.team === TeamType.WHITE ? "w" : "b";
+        const image = `assets/images/${PieceType[pieceType].toLowerCase()}_${teamSuffix}.svg`; // PieceType enum to get image
+
+        return { ...piece, type: pieceType, image }; // Update the piece type and image
+      }
+      return piece;
+    });
+
+    modalRef.current?.classList.add("hidden");
+
+    setPieces(updatedPieces); // Update the board with the new piece
+    setPromotionVisible(false); // Hide the promotion menu
+  }
+}
 
   let board = [];
 
@@ -176,6 +208,20 @@ export default function Chessboard() {
       ref={chessBoardRef}
     >
       {board}
+
+      {/* Promotion Menu (appears when a pawn reaches the last rank) */}
+      {isPromotionVisible && (
+        <div
+          id="pawn-promotion"
+          className={isPromotionVisible ? "show" : "hidden"} ref={modalRef}>
+          <div className="promotion-window">
+            <button onClick={() => handlePromotion(PieceType.QUEEN)}>Queen</button>
+            <button onClick={() => handlePromotion(PieceType.ROOK)}>Rook</button>
+            <button onClick={() => handlePromotion(PieceType.BISHOP)}>Bishop</button>
+            <button onClick={() => handlePromotion(PieceType.KNIGHT)}>Knight</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

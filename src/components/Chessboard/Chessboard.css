@@ -6,3 +6,61 @@
   height: 800px;
   background-color: blanchedalmond;
 }
+
+/* Main container for the modal window */
+#pawn-promotion {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+/* Show the modal window */
+#pawn-promotion.show {
+    display: flex;
+}
+
+/* Modal window content */
+#pawn-promotion .promotion-window {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 400px;
+    height: 200px;
+    background-color: rgba(127, 127, 127, 0.8);
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+}
+
+/* Buttons style */
+#pawn-promotion .promotion-window button {
+    background-color: #fff;
+    color: #333;
+    border: 2px solid #333;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover button effect */
+#pawn-promotion .promotion-window button:hover {
+    background-color: #333;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* Click button effect */
+#pawn-promotion .promotion-window button:active {
+    background-color: #444;
+    transform: scale(1);
+}
