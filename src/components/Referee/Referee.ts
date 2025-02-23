@@ -10,13 +10,38 @@ import {
 } from "./Rules";
 
 export default class Referee {
+  // Check if the position is occupied by a piece of the same team
+  tileIsOccupiedBySameTeam(
+    position: Position,
+    team: TeamType,
+    boardState: Piece[]
+  ): boolean {
+    return boardState.some(
+      (p) =>
+        p.position.x === position.x &&
+        p.position.y === position.y &&
+        p.team === team
+    );
+  }
+
+  tileIsOccupiedByOpponent(
+    x: number,
+    y: number,
+    boardState: Piece[],
+    team: TeamType
+  ): boolean {
+    return boardState.some(
+      (p) => p.position.x === x && p.position.y === y && p.team !== team
+    );
+  }
+
   // Method to check if the move is valid
   isValidMove(
     initialPosition: Position,
     desiredPosition: Position,
     type: PieceType,
     team: TeamType,
-    boardState: Piece[]
+    boardState: Piece[],
   ): boolean {
     switch (type) {
       case PieceType.PAWN:
@@ -24,27 +49,45 @@ export default class Referee {
           initialPosition,
           desiredPosition,
           team,
-          boardState
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
         );
       case PieceType.KNIGHT:
-        return KnightRules.isValidMove(initialPosition, desiredPosition);
+        return KnightRules.isValidMove(
+          initialPosition,
+          desiredPosition,
+          team,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
+        );
       case PieceType.BISHOP:
         return BishopRules.isValidMove(
           initialPosition,
           desiredPosition,
-          boardState
+          team,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
         );
       case PieceType.ROOK:
         return RookRules.isValidMove(
           initialPosition,
           desiredPosition,
-          boardState
+          team,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
         );
       case PieceType.QUEEN:
         return QueenRules.isValidMove(
           initialPosition,
           desiredPosition,
-          boardState
+          team,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
         );
       case PieceType.KING:
         return KingRules.isValidMove(initialPosition, desiredPosition);

@@ -1,11 +1,23 @@
-import { Position, Piece } from "../../Tile/Constants";
+import { Position, Piece, TeamType } from "../../Tile/Constants";
 
 export class BishopRules {
   // Check if a bishop move is valid
   static isValidMove(
     initialPosition: Position,
     desiredPosition: Position,
-    boardState: Piece[]
+    team: TeamType,
+    boardState: Piece[],
+    isPositionOccupiedBySameTeam: (
+      position: Position,
+      team: TeamType,
+      boardState: Piece[]
+    ) => boolean,
+    tileIsOccupiedByOpponent: (
+      x: number,
+      y: number,
+      boardState: Piece[],
+      team: TeamType
+    ) => boolean
   ): boolean {
     if (
       Math.abs(desiredPosition.x - initialPosition.x) !==
@@ -21,15 +33,21 @@ export class BishopRules {
     let y = initialPosition.y + dy;
 
     while (x !== desiredPosition.x && y !== desiredPosition.y) {
-      if (this.tileIsOccupied(x, y, boardState)) return false;
+      if (isPositionOccupiedBySameTeam({ x, y }, team, boardState)) {
+        return false;
+      }
       x += dx;
       y += dy;
     }
 
-    return true;
-  }
+    if (isPositionOccupiedBySameTeam(desiredPosition, team, boardState)) {
+      return false;
+    }
 
-  static tileIsOccupied(x: number, y: number, boardState: Piece[]): boolean {
-    return boardState.some((p) => p.position.x === x && p.position.y === y);
+    if (tileIsOccupiedByOpponent(desiredPosition.x, desiredPosition.y, boardState, team)) {
+      return true;
+    }
+
+    return true;
   }
 }
