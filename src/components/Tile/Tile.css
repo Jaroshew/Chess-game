@@ -1,7 +1,7 @@
 :root {
-  --color-background: #202020;
-  --color-darkSquare: #779556;
-  --color-lightSquare: #ebecd0;
+  --color-background: rgb(32, 32, 32);
+  --color-darkSquare: rgb(189, 161, 134);
+  --color-lightSquare: rgb(240, 226, 198);
 }
 
 body {
@@ -21,6 +21,7 @@ body {
   background-size: 70px;
   background-repeat: no-repeat;
   background-position: center;
+  z-index: 2;
 }
 
 .tile .chess-piece:hover {

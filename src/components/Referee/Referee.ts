@@ -7,6 +7,12 @@ import {
   RookRules,
   QueenRules,
   KingRules,
+  getPossiblePawnMoves,
+  getPossibleKnightMoves,
+  getPossibleBishopMoves,
+  getPossibleRookMoves,
+  getPossibleQueenMoves,
+  getPossibleKingMoves
 } from "./Rules";
 
 export default class Referee {
@@ -24,6 +30,7 @@ export default class Referee {
     );
   }
 
+  // Check if the position is occupied by a piece of the opposite team
   tileIsOccupiedByOpponent(
     x: number,
     y: number,
@@ -35,13 +42,35 @@ export default class Referee {
     );
   }
 
+  // En passant logic
+  isEnPassantMove(
+    initialPosition: Position,
+    desiredPosition: Position,
+    team: TeamType,
+    boardState: Piece[]
+  ): boolean {
+    const pawnDirection = team === TeamType.WHITE ? 1 : -1;
+
+    if (Math.abs(desiredPosition.x - initialPosition.x) === 1) {
+      // Find the pawn that is eligible for en passant
+      const piece = boardState.find(
+        (p) =>
+          p.position.x === desiredPosition.x &&
+          p.position.y === desiredPosition.y - pawnDirection &&
+          p.enPassant
+      );
+      return !!piece;
+    }
+    return false;
+  }
+
   // Method to check if the move is valid
   isValidMove(
     initialPosition: Position,
     desiredPosition: Position,
     type: PieceType,
     team: TeamType,
-    boardState: Piece[],
+    boardState: Piece[]
   ): boolean {
     switch (type) {
       case PieceType.PAWN:
@@ -96,25 +125,53 @@ export default class Referee {
     }
   }
 
-  // En passant logic
-  isEnPassantMove(
-    initialPosition: Position,
-    desiredPosition: Position,
-    team: TeamType,
-    boardState: Piece[]
-  ): boolean {
-    const pawnDirection = team === TeamType.WHITE ? 1 : -1;
-
-    if (Math.abs(desiredPosition.x - initialPosition.x) === 1) {
-      // Find the pawn that is eligible for en passant
-      const piece = boardState.find(
-        (p) =>
-          p.position.x === desiredPosition.x &&
-          p.position.y === desiredPosition.y - pawnDirection &&
-          p.enPassant
-      );
-      return !!piece;
+    // Method to get the valid moves for a piece
+    getValidMoves(piece: Piece, boardState: Piece[]) : Position[] {
+    switch(piece.type) {
+      case PieceType.PAWN:
+        return getPossiblePawnMoves(
+          piece,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
+        );
+      case PieceType.KNIGHT:
+        return getPossibleKnightMoves(
+          piece,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
+        );
+      case PieceType.BISHOP:
+        return getPossibleBishopMoves(
+          piece,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
+        );
+      case PieceType.ROOK:
+        return getPossibleRookMoves(
+          piece,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
+        );
+      case PieceType.QUEEN:
+        return getPossibleQueenMoves(
+          piece,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
+        );
+      case PieceType.KING:
+        return getPossibleKingMoves(
+          piece,
+          boardState,
+          this.tileIsOccupiedBySameTeam.bind(this),
+          this.tileIsOccupiedByOpponent.bind(this)
+        );
+      default:
+        return [];
     }
-    return false;
   }
-}
+} 

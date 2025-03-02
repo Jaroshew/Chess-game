@@ -14,6 +14,7 @@ export interface Piece {
   type: PieceType;
   team: TeamType;
   enPassant?: boolean;
+  possibleMoves?: Position[];
 }
 
 export interface Position {

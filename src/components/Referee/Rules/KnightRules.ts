@@ -17,7 +17,7 @@ export class KnightRules {
       y: number,
       boardState: Piece[],
       team: TeamType
-    ) => boolean,
+    ) => boolean
   ): boolean {
     const knightMoves = [
       [-2, -1],
@@ -44,10 +44,61 @@ export class KnightRules {
       return false;
     }
 
-    if (tileIsOccupiedByOpponent(desiredPosition.x, desiredPosition.y, boardState, team)) {
-      return true;
-    }
-
     return true;
   }
 }
+
+// Get possible moves for a knight
+export const getPossibleKnightMoves = (
+  knight: Piece,
+  boardState: Piece[],
+  isPositionOccupiedBySameTeam: (
+    position: Position,
+    team: TeamType,
+    boardState: Piece[]
+  ) => boolean,
+  tileIsOccupiedByOpponent: (
+    x: number,
+    y: number,
+    boardState: Piece[],
+    team: TeamType
+  ) => boolean
+): Position[] => {
+  const possibleMoves: Position[] = [];
+  const knightMoves = [
+    [-2, -1],
+    [-2, 1],
+    [-1, -2],
+    [-1, 2],
+    [1, -2],
+    [1, 2],
+    [2, -1],
+    [2, 1],
+  ];
+
+  // Check all possible knight moves
+  for (const [dx, dy] of knightMoves) {
+    const newX = knight.position.x + dx;
+    const newY = knight.position.y + dy;
+
+    // Check if the move is within the bounds of the board
+    if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
+      const newPosition: Position = { x: newX, y: newY };
+
+      // If the move is valid and not occupied by the same team or opponent's piece
+      if (
+        !isPositionOccupiedBySameTeam(newPosition, knight.team, boardState) &&
+        !tileIsOccupiedByOpponent(
+          newPosition.x,
+          newPosition.y,
+          boardState,
+          knight.team
+        )
+      ) {
+        possibleMoves.push(newPosition);
+      }
+    }
+  }
+
+  return possibleMoves;
+};
