@@ -1,78 +1,93 @@
+/* Chessboard Styling */
 #chessboard {
-  display: grid;
-  grid-template-columns: repeat(8, 100px);
-  grid-template-rows: repeat(8, 100px);
-  width: 800px;
-  height: 800px;
-  background-color: blanchedalmond;
+    display: grid;
+    grid-template-columns: repeat(8, 100px);
+    grid-template-rows: repeat(8, 100px);
+    width: 800px;
+    height: 800px;
+    background-color: blanchedalmond;
 }
 
-/* Main container for the modal window */
-#pawn-promotion {
-    position: fixed;
+/* Modal Styles */
+.modal {
+    position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-}
-
-/* Show the modal window */
-#pawn-promotion.show {
-    display: flex;
-}
-
-/* Modal window content */
-#pawn-promotion .promotion-window {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    width: 400px;
-    height: 200px;
-    background-color: rgba(127, 127, 127, 0.8);
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    padding: 20px;
-}
-
-/* Buttons style */
-#pawn-promotion .promotion-window button {
-    background-color: #fff;
-    color: #333;
-    border: 2px solid #333;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-/* Hover button effect */
-#pawn-promotion .promotion-window button:hover {
-    background-color: #333;
-    color: #fff;
-    transform: scale(1.1);
-}
-
-/* Click button effect */
-#pawn-promotion .promotion-window button:active {
-    background-color: #444;
-    transform: scale(1);
-}
-
-/* Possible moves */
-.tile-highlight {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: inset 0px 0px 20px rgba(247, 240, 139, 1.5);
+    background: rgba(0, 0, 0, 0.5);
+    transition: background 0.3s ease;
     z-index: 1;
+}
+
+.modal.hidden {
+    display: none; /* Hide modal when not active */
+}
+
+/* Modal Body */
+.modal > .modal-body {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    border-radius: 10px;
+    height: 350px;
+    width: 600px;
+    background: linear-gradient(125deg, rgba(100, 100, 100, 0.8), rgba(50, 50, 50, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Modal Image Styling */
+.modal > .modal-body > img {
+    height: 120px;
+    width: 120px;
+    border-radius: 25%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.modal > .modal-body > img:hover {
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Checkmate Body Layout */
+.modal > .modal-body > .checkmate-body {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+}
+
+/* Checkmate Message */
+.modal > .modal-body > .checkmate-body > span {
+    color: white;
+    font-size: 32px;
+}
+
+/* Checkmate Button Styling */
+.modal > .modal-body > .checkmate-body > button {
+    background: rgba(100, 100, 100, 0.8);
+    border: none;
+    border-radius: 8px;
+    padding: 16px 32px;
+    font-size: 32px;
+    color: white;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for button */
+.modal > .modal-body > .checkmate-body > button:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
 }

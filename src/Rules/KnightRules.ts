@@ -1,59 +1,79 @@
-import { TeamType } from "../Constants";
 import { Piece, Position } from "../Models";
+import { TeamType } from "../Types";
 import { tileIsEmptyOrOccupiedByOpponent } from "./GeneralRules";
 
-// Helper function to check if the knight's move is valid
-const isValidKnightMove = (
+/**
+ * Checks if the knight can move to the desired position.
+ * @param {Position} initialPosition - The starting position of the knight.
+ * @param {Position} desiredPosition - The position the knight wants to move to.
+ * @param {TeamType} team - The team color of the knight.
+ * @param {Piece[]} boardState - The current state of the board.
+ * @returns {boolean} - True if the move is valid, otherwise false.
+ */
+export const knightMove = (
   initialPosition: Position,
   desiredPosition: Position,
   team: TeamType,
   boardState: Piece[]
 ): boolean => {
-  const dx = Math.abs(desiredPosition.x - initialPosition.x);
-  const dy = Math.abs(desiredPosition.y - initialPosition.y);
+  const knightMoves = [
+    { x: 1, y: 2 },
+    { x: 1, y: -2 },
+    { x: -1, y: 2 },
+    { x: -1, y: -2 },
+    { x: 2, y: 1 },
+    { x: 2, y: -1 },
+    { x: -2, y: 1 },
+    { x: -2, y: -1 },
+  ];
 
-  // Knight moves in "L" shape: 2 squares in one direction and 1 square in the other
-  if ((dx === 2 && dy === 1) || (dx === 1 && dy === 2)) {
-    return tileIsEmptyOrOccupiedByOpponent(desiredPosition, boardState, team);
-  }
-
-  return false;
+  return knightMoves.some(
+    (move) =>
+      desiredPosition.samePosition(
+        new Position(initialPosition.x + move.x, initialPosition.y + move.y)
+      ) && tileIsEmptyOrOccupiedByOpponent(desiredPosition, boardState, team)
+  );
 };
 
-export const KnightRules = (
-  initialPosition: Position,
-  desiredPosition: Position,
-  team: TeamType,
-  boardState: Piece[]
-): boolean => {
-  return isValidKnightMove(initialPosition, desiredPosition, team, boardState);
-};
-
+/**
+ * Generates all possible legal moves for the knight.
+ * @param {Piece} knight - The knight piece.
+ * @param {Piece[]} boardState - The current state of the board.
+ * @returns {Position[]} - An array of possible positions the knight can move to.
+ */
 export const getPossibleKnightMoves = (
   knight: Piece,
   boardState: Piece[]
 ): Position[] => {
   const possibleMoves: Position[] = [];
-  const directions = [
-    [2, 1],
-    [2, -1],
-    [-2, 1],
-    [-2, -1], // 2 squares in x direction, 1 in y direction
-    [1, 2],
-    [1, -2],
-    [-1, 2],
-    [-1, -2], // 1 square in x direction, 2 in y direction
+
+  const knightMoves = [
+    { x: 1, y: 2 },
+    { x: 1, y: -2 },
+    { x: -1, y: 2 },
+    { x: -1, y: -2 },
+    { x: 2, y: 1 },
+    { x: 2, y: -1 },
+    { x: -2, y: 1 },
+    { x: -2, y: -1 },
   ];
 
-  directions.forEach(([dx, dy]) => {
-    const newPosition = new Position(
-      knight.position.x + dx,
-      knight.position.y + dy
+  for (const move of knightMoves) {
+    const destination = new Position(
+      knight.position.x + move.x,
+      knight.position.y + move.y
     );
-    if (tileIsEmptyOrOccupiedByOpponent(newPosition, boardState, knight.team)) {
-      possibleMoves.push(newPosition);
+
+    if (
+      destination.x >= 0 &&
+      destination.x <= 7 &&
+      destination.y >= 0 &&
+      destination.y <= 7 &&
+      tileIsEmptyOrOccupiedByOpponent(destination, boardState, knight.team)
+    ) {
+      possibleMoves.push(destination);
     }
-  });
+  }
 
   return possibleMoves;
 };

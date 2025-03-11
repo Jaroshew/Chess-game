@@ -1,68 +1,71 @@
-import { samePosition, TeamType } from "../Constants";
+import { TeamType } from "../Types";
 import { Piece, Position } from "../Models";
 import {
   tileIsEmptyOrOccupiedByOpponent,
   tileIsOccupied,
-  tileIsOccupiedByOpponent,
 } from "./GeneralRules";
 
-// Queen movement rules, combining Rook and Bishop logic
-export const QueenRules = (
+/**
+ * Checks if the queen can move to the desired position.
+ * @param {Position} initialPosition - The starting position of the queen.
+ * @param {Position} desiredPosition - The position the queen wants to move to.
+ * @param {TeamType} team - The team color of the queen.
+ * @param {Piece[]} boardState - The current state of the board.
+ * @returns {boolean} - True if the move is valid, otherwise false.
+ */
+export const queenMove = (
   initialPosition: Position,
   desiredPosition: Position,
   team: TeamType,
   boardState: Piece[]
 ): boolean => {
-  // Calculate direction for diagonal or straight movement
-  let multiplierX = 0;
-  let multiplierY = 0;
-
-  if (desiredPosition.x < initialPosition.x) multiplierX = -1;
-  else if (desiredPosition.x > initialPosition.x) multiplierX = 1;
-
-  if (desiredPosition.y < initialPosition.y) multiplierY = -1;
-  else if (desiredPosition.y > initialPosition.y) multiplierY = 1;
+  const directionX = Math.sign(desiredPosition.x - initialPosition.x);
+  const directionY = Math.sign(desiredPosition.y - initialPosition.y);
 
   for (let i = 1; i < 8; i++) {
     const passedPosition = new Position(
-      initialPosition.x + i * multiplierX,
-      initialPosition.y + i * multiplierY
+      initialPosition.x + i * directionX,
+      initialPosition.y + i * directionY
     );
 
-    // If destination reached, check if move is valid
-    if (samePosition(passedPosition, desiredPosition)) {
-      if (tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)) {
-        return true;
-      }
-    } else if (tileIsOccupied(passedPosition, boardState)) {
-      break; // Stop if path is blocked
+    if (passedPosition.samePosition(desiredPosition)) {
+      return tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team);
     }
 
-    // Stop if diagonal direction and reached the edge of board
-    if (multiplierX !== 0 && multiplierY !== 0 && i > 7) break;
+    if (tileIsOccupied(passedPosition, boardState)) {
+      return false;
+    }
   }
-  return false; // Invalid move if no valid path found
+
+  return false;
 };
 
-// Get all possible Queen moves (combining Rook and Bishop moves)
+/**
+ * Generates all possible legal moves for the queen.
+ * @param {Piece} queen - The queen piece.
+ * @param {Piece[]} boardState - The current state of the board.
+ * @returns {Position[]} - An array of possible positions the queen can move to.
+ */
 export const getPossibleQueenMoves = (
   queen: Piece,
   boardState: Piece[]
 ): Position[] => {
   const possibleMoves: Position[] = [];
+
+  // Queen movement directions: horizontal, vertical, and diagonal
   const directions = [
     { dx: 1, dy: 0 }, // Right
     { dx: -1, dy: 0 }, // Left
     { dx: 0, dy: 1 }, // Up
     { dx: 0, dy: -1 }, // Down
-    { dx: 1, dy: 1 }, // Upper right
-    { dx: 1, dy: -1 }, // Bottom right
-    { dx: -1, dy: -1 }, // Bottom left
-    { dx: -1, dy: 1 }, // Top left
+    { dx: 1, dy: 1 }, // Upper right diagonal
+    { dx: -1, dy: 1 }, // Upper left diagonal
+    { dx: 1, dy: -1 }, // Bottom right diagonal
+    { dx: -1, dy: -1 }, // Bottom left diagonal
   ];
 
-  // Check all possible directions
-  for (const { dx, dy } of directions) {
+  // Iterate over each possible direction
+  directions.forEach(({ dx, dy }) => {
     for (let i = 1; i < 8; i++) {
       const destination = new Position(
         queen.position.x + i * dx,
@@ -70,17 +73,17 @@ export const getPossibleQueenMoves = (
       );
 
       if (!tileIsOccupied(destination, boardState)) {
-        possibleMoves.push(destination); // Empty space
-      } else if (
-        tileIsOccupiedByOpponent(destination, boardState, queen.team)
-      ) {
-        possibleMoves.push(destination); // Can capture opponent piece
-        break; // Stop if piece is captured
+        possibleMoves.push(destination);
       } else {
-        break; // Stop if path is blocked
+        if (
+          tileIsEmptyOrOccupiedByOpponent(destination, boardState, queen.team)
+        ) {
+          possibleMoves.push(destination);
+        }
+        break;
       }
     }
-  }
+  });
 
   return possibleMoves;
 };

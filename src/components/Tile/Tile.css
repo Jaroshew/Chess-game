@@ -1,45 +1,63 @@
 :root {
-  --color-background: rgb(32, 32, 32);
-  --color-darkSquare: rgb(189, 161, 134);
-  --color-lightSquare: rgb(240, 226, 198);
-}
+    --color-background: rgb(32, 32, 32); /* Background color of the page */
+    --color-darkSquare: rgb(189, 161, 134); /* Dark square color */
+    --color-lightSquare: rgb(240, 226, 198); /* Light square color */
+ }
 
 body {
-  background: var(--color-background);
+    background-color: var(--color-background);
 }
 
-.tile {
-  display: grid;
-  place-content: center;
-  width: 100px;
-  height: 100px;
-}
-
-.tile .chess-piece {
-  width: 70px;
-  height: 70px;
-  background-size: 70px;
-  background-repeat: no-repeat;
-  background-position: center;
-  z-index: 2;
-}
-
+/* Hover and Active States for Chess Pieces */
 .tile .chess-piece:hover {
-  cursor: grab;
+    cursor: grab;
 }
 
 .tile .chess-piece:active {
-  cursor: grabbing;
+    cursor: grabbing;
 }
 
+/* Chessboard Tile Styles */
+.tile {
+    display: grid;
+    place-content: center;
+    width: 100px;
+    height: 100px;
+}
+
+/* Chess Piece Styling */
+.tile .chess-piece {
+    width: 75px;
+    height: 75px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 75px;
+}
+
+/* Black and White Tile Backgrounds */
 .black-tile {
-  background-color: var(--color-darkSquare);
+    background-color: var(--color-darkSquare);
 }
 
 .white-tile {
-  background-color: var(--color-lightSquare);
+    background-color: var(--color-lightSquare);
 }
 
-.tile img {
-  width: 70px;
+/* Highlight for Possible Moves */
+.tile-highlight:not(.chess-piece-tile)::before {
+    content: " ";
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(209, 137, 50, 0.543);
+}
+
+/* Highlight for Tiles with Chess Pieces */
+.tile-highlight.chess-piece-tile::before {
+    position: absolute;
+    content: " ";
+    width: 90px;
+    height: 90px;
+    border: 5px solid rgba(209, 138, 50, 0.4);
+    border-radius: 25%;
 }

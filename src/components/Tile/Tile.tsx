@@ -2,15 +2,19 @@ import "./Tile.css";
 
 interface Props {
   image?: string;
-  coordinate: number;
+  number: number;
   highlight: boolean;
 }
 
-export default function Tile({ coordinate, image, highlight }: Props) {
-  const className: string = [
+/**
+ * Renders a chessboard tile.
+ * Applies background color based on tile number, highlights if needed,
+ * and displays a chess piece image if provided.
+ */
+export default function Tile({ number, image, highlight }: Props) {
+  const classes = [
     "tile",
-    coordinate % 2 === 0 && "black-tile",
-    coordinate % 2 !== 0 && "white-tile",
+    number % 2 === 0 ? "black-tile" : "white-tile",
     highlight && "tile-highlight",
     image && "chess-piece-tile",
   ]
@@ -18,12 +22,12 @@ export default function Tile({ coordinate, image, highlight }: Props) {
     .join(" ");
 
   return (
-    <div className={className}>
+    <div className={classes}>
       {image && (
         <div
-          style={{ backgroundImage: `url(${image})` }}
           className="chess-piece"
-        ></div>
+          style={{ backgroundImage: `url(${image})` }}
+        />
       )}
     </div>
   );
